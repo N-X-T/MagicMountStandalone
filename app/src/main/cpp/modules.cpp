@@ -199,7 +199,7 @@ void load_modules(const vector<module_info> &module_list) {
         close(fd);
     }
 
-    if (!system->is_empty()) {
+    if (!root->is_empty()) {
         // Handle special read-only partitions
         for (auto &part: partitions) {
             struct stat st{};
@@ -211,7 +211,10 @@ void load_modules(const vector<module_info> &module_list) {
             }
         }
         root->prepare();
+        // Make /apex shared temporarily to avoid increasing new peer group on bind mount
+        xmount(nullptr, "/apex", nullptr, MS_SHARED | MS_REC, nullptr);
         root->mount();
+        xmount(nullptr, "/apex", nullptr, MS_PRIVATE | MS_REC, nullptr);
     } else {
         LOGI("nothing to mount");
     }
