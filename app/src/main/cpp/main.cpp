@@ -8,9 +8,10 @@ std::string tmp_path = "/debug_ramdisk";
 using namespace std::string_view_literals;
 
 std::vector<std::string> partitions{"/vendor", "/product", "/system_ext"};
+std::string module_dir = "/data/adb/modules";
 
 void help() {
-    LOGE("usage: magic_mount <mount|umount> [--work-dir dir] [--magic magic] [--add-partitions /p1,/p2,....]");
+    LOGE("usage: magic_mount <mount|umount> [--work-dir dir] [--magic magic] [--add-partitions /p1,/p2,....] [--module-dir dir]");
 }
 
 int main(int argc, char **argv) {
@@ -52,6 +53,8 @@ int main(int argc, char **argv) {
                 break;
             }
             partitions.emplace_back(ps.substr(pos));
+        } else if (argv[i] == "--module-dir"sv && i + 1 < argc) {
+            module_dir = argv[i + 1];
         }
     }
 

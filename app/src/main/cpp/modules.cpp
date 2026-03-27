@@ -136,7 +136,7 @@ void module_node::mount() {
     std::string path = module + (parent()->root()->prefix + node_path());
     string mnt_src = module_mnt + path;
     {
-        string src = MODULEROOT "/" + path;
+        string src = module_dir + "/" + path;
         if (exist()) clone_attr(node_path().data(), src.data());
     }
     if (isa<tmpfs_node>(parent())) {
@@ -170,7 +170,7 @@ void tmpfs_node::mount() {
 }
 
 void load_modules(const vector<module_info> &module_list) {
-    node_entry::module_mnt = MODULEROOT "/";
+    node_entry::module_mnt = module_dir + "/";
 
     auto root = make_unique<root_node>("");
     auto system = new root_node("system");
@@ -180,7 +180,7 @@ void load_modules(const vector<module_info> &module_list) {
     LOGI("* Loading modules");
     for (const auto &m: module_list) {
         const char *module = m.name.data();
-        char *b = buf + snprintf(buf, sizeof(buf), MODULEROOT "/%s/", module);
+        char *b = buf + snprintf(buf, sizeof(buf), "%s/%s/", module_dir.c_str(), module);
 
         // Check whether skip mounting
         strcpy(b, "skip_mount");
@@ -222,7 +222,7 @@ void load_modules(const vector<module_info> &module_list) {
 
 template<typename Func>
 static void foreach_module(Func fn) {
-    auto dir = open_dir(MODULEROOT);
+    auto dir = open_dir(module_dir.c_str());
     if (!dir)
         return;
 
@@ -255,8 +255,7 @@ void handle_modules() {
 void umount_modules(const char *magic) {
     vector<string> targets;
     for (auto &info: parse_mount_info("self")) {
-        if (info.root.starts_with("/adb/modules/") ||
-            (info.source == magic && info.type == "tmpfs")) {
+        if (info.source == magic && info.type == "tmpfs") {
             targets.emplace_back(info.target);
         }
     }

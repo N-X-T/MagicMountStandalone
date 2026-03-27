@@ -21,7 +21,6 @@ struct module_info {
 // https://github.com/topjohnwu/Magisk/blob/455b13b83c4dde60511e43a634c880317b1ba5fc/native/src/include/consts.hpp#L8
 
 #define SECURE_DIR      "/data/adb"
-#define MODULEROOT      SECURE_DIR "/modules"
 
 #define INTLROOT      ".magisk"
 #define WORKERDIR     INTLROOT "/worker"

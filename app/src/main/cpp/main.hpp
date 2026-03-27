@@ -10,3 +10,4 @@ void handle_modules();
 void umount_modules(const char *magic);
 
 extern std::vector<std::string> partitions;
+extern std::string module_dir;
